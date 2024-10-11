@@ -1,14 +1,17 @@
 from encryptAES import *  
+from decryptAES import *
 import os
 import struct 
 
 # Tạo khoá 16 byte (128 bit)
-key = os.urandom(16) 
-key_hex = key.hex() #chuyển sang hex
+# key = os.urandom(16) 
+# key_hex = key.hex() #chuyển sang hex
 
 # Lưu khóa vào file Notepad
-with open("key.txt", "w") as file:
-  file.write(key_hex)
+# with open("key.txt", "w") as file:
+#   file.write(key_hex)
+
+key_hex = "32df43dc72149ac2e06bacdee6264b9f"
 
 # Chia chuỗi thành các phần mỗi phần 8 ký tự
 w = []
@@ -61,18 +64,27 @@ def state_to_string(state):
 file_path = "test.txt"
 word_content = read_text_file(file_path)
 states = string_to_states(word_content)
-previousState = state_to_string(states[0])
 
+# Mã hoá AES
+encrypted_states = []
 for state in states:
   encrypted_content = encrypt(state, w)
+  encrypted_states.append(encrypted_content)
+  print("Bản mã hoá: ")
   showMatrix(encrypted_content)
-  print("\n")
 
-# with open("test.txt", "wb") as file:
-#   for i in range(len(encrypted_content)): 
-#     word_data = str(showWord(encrypted_content[i]))  
-#     file.write(word_data.encode('utf-8'))
+# Giải mã AES
+decrypted_states = []
+for encryptState in encrypted_states: 
+  decrypted_content = decrypt(encryptState, w)
+  decrypted_states.append(decrypted_content)
+  print("Bản giải mã: ")
+  showMatrix(decrypted_content)
 
-# print(f"Đã ghi nội dung mã hóa vào {file_path}")
+# Chuyển đổi state sang string
+originalString = ""
+for decryptState in decrypted_states:
+  decryptString = state_to_string(decryptState)
+  originalString += decryptString
 
-
+print(f"Chuỗi ban đầu là: {originalString}")
