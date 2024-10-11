@@ -60,31 +60,56 @@ def state_to_string(state):
     # Bước 3: Chuyển đổi byte_data thành chuỗi ký tự
     return byte_data.decode('utf-8')
 
+def encryptFile(file_path):
+  contentFile = read_text_file(file_path)
+  states = string_to_states(contentFile)
+
+  # Mã hoá AES
+  encrypted_states = []
+  for state in states:
+    encrypted_content = encrypt(state, w)
+    encrypted_states.append(encrypted_content)
+    # print("Bản mã hoá: ")
+    # showMatrix(encrypted_content)
+
+  # Ghi encrypted_states vào file
+  with open(file_path, 'w') as file:
+    for encrypted_state in encrypted_states:
+      encrypted_state_merge = '#'.join(map(str, encrypted_state))
+      file.write(encrypted_state_merge + '\n')
+
+
+def decryptFile(file_path):
+  # Đọc nội dung từ file và lưu vào encrypted_states
+  encrypted_states = []
+  with open(file_path, 'r') as file:
+    for line in file:
+      encrypted_numbers = list(map(int, line.strip().split('#')))
+      encrypted_states.append(encrypted_numbers)
+
+  # Giải mã AES
+  decrypted_states = []
+  for encryptState in encrypted_states: 
+    decrypted_content = decrypt(encryptState, w)
+    decrypted_states.append(decrypted_content)
+    # print("Bản giải mã: ")
+    # showMatrix(decrypted_content)
+
+  # Chuyển đổi state sang string
+  originalString = ""
+  for decryptState in decrypted_states:
+    decryptString = state_to_string(decryptState)
+    originalString += decryptString
+
+  # Ghi bản rõ vào file
+  with open(file_path, 'w') as file:
+    file.write(originalString + '\n')
 
 file_path = "test.txt"
-word_content = read_text_file(file_path)
-states = string_to_states(word_content)
 
-# Mã hoá AES
-encrypted_states = []
-for state in states:
-  encrypted_content = encrypt(state, w)
-  encrypted_states.append(encrypted_content)
-  print("Bản mã hoá: ")
-  showMatrix(encrypted_content)
+encryptFile(file_path)
+# decryptFile(file_path)
 
-# Giải mã AES
-decrypted_states = []
-for encryptState in encrypted_states: 
-  decrypted_content = decrypt(encryptState, w)
-  decrypted_states.append(decrypted_content)
-  print("Bản giải mã: ")
-  showMatrix(decrypted_content)
-
-# Chuyển đổi state sang string
-originalString = ""
-for decryptState in decrypted_states:
-  decryptString = state_to_string(decryptState)
-  originalString += decryptString
-
-print(f"Chuỗi ban đầu là: {originalString}")
+#Note:
+#Chạy fnc encryptFile để mã hoá file cần mã hoá
+#Chạy fnc decrypteFile để giải mã file bị mã hoá trước đó
