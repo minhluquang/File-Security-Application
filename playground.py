@@ -25,7 +25,7 @@ def string_to_states(input_string):
     byte_data = input_string.encode('utf-8')
     
     # In ra độ dài của byte_data để tham khảo
-    print(f"Độ dài ban đầu của byte_data: {len(byte_data)} bytes")
+    # print(f"Độ dài ban đầu của byte_data: {len(byte_data)} bytes")
     
     # Bước 2: Đệm thêm bytes nếu độ dài byte_data không đủ 16
     if len(byte_data) % 16 != 0:
@@ -47,9 +47,21 @@ def string_to_states(input_string):
 
     return states
 
+def state_to_string(state):
+    # Bước 1: Chuyển đổi từng số nguyên 32-bit trong state thành 4 bytes
+    byte_data = b''.join([num.to_bytes(4, byteorder='big') for num in state])
+
+    # Bước 2: Loại bỏ các byte đệm (0x00) nếu có
+    byte_data = byte_data.rstrip(b'\x00')
+
+    # Bước 3: Chuyển đổi byte_data thành chuỗi ký tự
+    return byte_data.decode('utf-8')
+
+
 file_path = "test.txt"
 word_content = read_text_file(file_path)
 states = string_to_states(word_content)
+previousState = state_to_string(states[0])
 
 for state in states:
   encrypted_content = encrypt(state, w)
