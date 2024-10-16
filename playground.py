@@ -20,14 +20,11 @@ for i in range(0, len(key_hex), 8):
   w.append(wi)
   
 def read_text_file(file_path):
-  with open(file_path, "r", encoding='utf-8') as file:
+  with open(file_path, "rb") as file:
     return file.read()  # Đọc toàn bộ nội dung file
 
-def string_to_states(input_string):
-    # Bước 1: Chuyển đổi chuỗi thành bytes
-    byte_data = input_string.encode('utf-8')
-    
-    # In ra độ dài của byte_data để tham khảo
+def binary_to_states(byte_data):
+    # Bước 1: In ra độ dài của byte_data để tham khảo
     # print(f"Độ dài ban đầu của byte_data: {len(byte_data)} bytes")
     
     # Bước 2: Đệm thêm bytes nếu độ dài byte_data không đủ 16
@@ -50,65 +47,67 @@ def string_to_states(input_string):
 
     return states
 
-def state_to_string(state):
-    # Bước 1: Chuyển đổi từng số nguyên 32-bit trong state thành 4 bytes
-    byte_data = b''.join([num.to_bytes(4, byteorder='big') for num in state])
 
-    # Bước 2: Loại bỏ các byte đệm (0x00) nếu có
+def states_to_binary(states):
+    # Bước 1: Khởi tạo chuỗi byte rỗng
+    byte_data = b''
+
+    # Bước 2: Chuyển đổi từng state thành chuỗi byte và ghép lại
+    for state in states:
+        for num in state:
+            # Chuyển từng số nguyên 32-bit trong state thành 4 bytes
+            byte_data += num.to_bytes(4, byteorder='big')
+
+    # Bước 3: Loại bỏ các byte đệm nếu có (ví dụ: 0x00 ở cuối)
     byte_data = byte_data.rstrip(b'\x00')
 
-    # Bước 3: Chuyển đổi byte_data thành chuỗi ký tự
-    return byte_data.decode('utf-8')
+    return byte_data
+
 
 def encryptFile(file_path):
   contentFile = read_text_file(file_path)
-  states = string_to_states(contentFile)
+  states = binary_to_states(contentFile)
 
-  # Mã hoá AES
+  # Mã hóa AES
   encrypted_states = []
   for state in states:
     encrypted_content = encrypt(state, w)
     encrypted_states.append(encrypted_content)
-    # print("Bản mã hoá: ")
-    # showMatrix(encrypted_content)
 
-  # Ghi encrypted_states vào file
-  with open(file_path, 'w') as file:
-    for encrypted_state in encrypted_states:
-      encrypted_state_merge = '#'.join(map(str, encrypted_state))
-      file.write(encrypted_state_merge + '\n')
+  # Chuyển đổi các encrypted_states thành dữ liệu nhị phân
+  encrypted_binary = states_to_binary(encrypted_states)
+
+  # Ghi dữ liệu nhị phân vào file
+  with open(file_path + '.enc', 'wb') as file:
+    file.write(encrypted_binary)
 
 
 def decryptFile(file_path):
-  # Đọc nội dung từ file và lưu vào encrypted_states
-  encrypted_states = []
-  with open(file_path, 'r') as file:
-    for line in file:
-      encrypted_numbers = list(map(int, line.strip().split('#')))
-      encrypted_states.append(encrypted_numbers)
+  # Đọc dữ liệu nhị phân từ file
+  with open(file_path, 'rb') as file:
+    encrypted_binary = file.read()
+
+  # Chuyển đổi dữ liệu nhị phân thành các state
+  encrypted_states = binary_to_states(encrypted_binary)
 
   # Giải mã AES
   decrypted_states = []
-  for encryptState in encrypted_states: 
+  for encryptState in encrypted_states:
     decrypted_content = decrypt(encryptState, w)
     decrypted_states.append(decrypted_content)
-    # print("Bản giải mã: ")
-    # showMatrix(decrypted_content)
 
-  # Chuyển đổi state sang string
-  originalString = ""
-  for decryptState in decrypted_states:
-    decryptString = state_to_string(decryptState)
-    originalString += decryptString
+  # Chuyển đổi state sang binary
+  binary_data = states_to_binary(decrypted_states)
 
   # Ghi bản rõ vào file
-  with open(file_path, 'w') as file:
-    file.write(originalString + '\n')
+  with open(file_path.replace('.enc', '_decrypted.txt'), 'wb') as file:
+    file.write(binary_data)
 
 file_path = "test.txt"
 
 encryptFile(file_path)
-# decryptFile(file_path)
+decryptFile(file_path + '.enc')
+
 
 #Note:
 #Chạy fnc encryptFile để mã hoá file cần mã hoá
