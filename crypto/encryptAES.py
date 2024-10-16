@@ -112,8 +112,9 @@ def shiftRows(subByte):
     return kq
 
 def nhan2(w):
-    kq = w << 1
-    if kq > 256:
+    kq = (w << 1) & 0xFF
+    # if kq > 256:
+    if w >= 0x80:
         kq = kq ^ 0x11b
     kq = kq & 0xFF
     return kq

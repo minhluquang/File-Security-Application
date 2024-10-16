@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from crypto.cryptoUtils import *
 
 app = Flask(__name__)
 base_dir = os.path.dirname(os.path.abspath(__file__))
-app.config['UPLOAD_FOLDER'] = os.path.join(base_dir, 'files_encoded') # Thư mục chứa file đã mã hóa là 'files_encoded'
+app.config['UPLOAD_FOLDER'] = os.path.join(base_dir, 'files_received') # Thư mục chứa file đã mã hóa là 'files_encoded'
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
@@ -32,12 +36,10 @@ def upload_file():
 def encrypt_file(file_path):
     # Hàm mã hóa file
     try:
-        with open(file_path, 'rb') as f:
-            data = f.read()
-        # Thực hiện mã hóa (ví dụ: đảo ngược dữ liệu)
-        encrypted_data = data[::-1]
-        with open(file_path, 'wb') as f:
-            f.write(encrypted_data)
+        # Thực hiện mã hoá
+        file_name = os.path.basename(file_path)
+        encryptFile(file_name)
+        print(file_name)
     except Exception as e:
         raise Exception(f'Mã hóa thất bại: {str(e)}')
 

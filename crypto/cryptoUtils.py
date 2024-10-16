@@ -1,7 +1,10 @@
+import os
+import sys
+import struct 
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from encryptAES import *  
 from decryptAES import *
-import os
-import struct 
 
 # Tạo khoá 16 byte (128 bit)
 # key = os.urandom(16) 
@@ -65,9 +68,9 @@ def states_to_binary(states):
 
 
 def encryptFile(file_path):
-  contentFile = read_text_file(file_path)
+  contentFile = read_text_file("GUI/files_received/" + file_path)
   states = binary_to_states(contentFile)
-
+  
   # Mã hóa AES
   encrypted_states = []
   for state in states:
@@ -77,38 +80,52 @@ def encryptFile(file_path):
   # Chuyển đổi các encrypted_states thành dữ liệu nhị phân
   encrypted_binary = states_to_binary(encrypted_states)
 
+  # Đường dẫn lưu file mã hoá
+  output_directory = "GUI/files_encoded/"
+
   # Ghi dữ liệu nhị phân vào file
-  with open(file_path + '.enc', 'wb') as file:
+  with open(output_directory + file_path + '.enc', 'wb') as file:
     file.write(encrypted_binary)
 
 
 def decryptFile(file_path):
   # Đọc dữ liệu nhị phân từ file
-  with open(file_path, 'rb') as file:
+  with open(output_directory + file_path, 'rb') as file:
     encrypted_binary = file.read()
 
   # Chuyển đổi dữ liệu nhị phân thành các state
   encrypted_states = binary_to_states(encrypted_binary)
 
+  # Đường dẫn lưu file sau khi mã hoá
+  output_directory = "GUI/files_decoded/"
+
+  #Kiểm tra và tạo thư mục nếu không tồn tại
+  os.makedirs(output_directory, exist_ok=True)
+
   # Giải mã AES
   decrypted_states = []
-  for encryptState in encrypted_states:
+  for i, encryptState in enumerate(encrypted_states):
     decrypted_content = decrypt(encryptState, w)
     decrypted_states.append(decrypted_content)
-
+ 
   # Chuyển đổi state sang binary
   binary_data = states_to_binary(decrypted_states)
-
+  
   # Ghi bản rõ vào file
-  with open(file_path.replace('.enc', '_decrypted.txt'), 'wb') as file:
+  file_path = file_path[:-4] #Loại bỏ .enc
+  base_name, ext = os.path.splitext(file_path)
+  base_name = base_name.replace("GUI/files_encoded/", "")
+  
+  # Đường dẫn lưu file
+  output_directory = 'GUI/files_decoded/'
+  
+  # Kiểm tra và tạo thư mục nếu không tồn tại
+  os.makedirs(output_directory, exist_ok=True)
+
+  with open(f'{output_directory}{base_name}_decrypted{ext}', 'wb') as file:
     file.write(binary_data)
 
-file_path = "test.txt"
+# file_path = "VOCABS.docx"
 
-encryptFile(file_path)
-decryptFile(file_path + '.enc')
-
-
-#Note:
-#Chạy fnc encryptFile để mã hoá file cần mã hoá
-#Chạy fnc decrypteFile để giải mã file bị mã hoá trước đó
+# encryptFile(file_path)
+# decryptFile(file_path + '.enc')
