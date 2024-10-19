@@ -68,7 +68,7 @@ def states_to_binary(states):
 
 
 def encryptFile(file_path):
-  contentFile = read_text_file("GUI/files_received/" + file_path)
+  contentFile = read_text_file(file_path)
   states = binary_to_states(contentFile)
   
   # Mã hóa AES
@@ -84,13 +84,16 @@ def encryptFile(file_path):
   output_directory = "GUI/files_encoded/"
 
   # Ghi dữ liệu nhị phân vào file
-  with open(output_directory + file_path + '.enc', 'wb') as file:
+  # with open(output_directory + file_path + '.enc', 'wb') as file:
+  #   file.write(encrypted_binary)
+  with open(file_path, 'wb') as file:
     file.write(encrypted_binary)
+
 
 
 def decryptFile(file_path):
   # Đọc dữ liệu nhị phân từ file
-  with open(output_directory + file_path, 'rb') as file:
+  with open(file_path, 'rb') as file:
     encrypted_binary = file.read()
 
   # Chuyển đổi dữ liệu nhị phân thành các state
@@ -112,9 +115,9 @@ def decryptFile(file_path):
   binary_data = states_to_binary(decrypted_states)
   
   # Ghi bản rõ vào file
-  file_path = file_path[:-4] #Loại bỏ .enc
-  base_name, ext = os.path.splitext(file_path)
-  base_name = base_name.replace("GUI/files_encoded/", "")
+  # file_path = file_path[:-4] #Loại bỏ .enc
+  # base_name, ext = os.path.splitext(file_path)
+  # base_name = base_name.replace("GUI/files_encoded/", "")
   
   # Đường dẫn lưu file
   output_directory = 'GUI/files_decoded/'
@@ -122,7 +125,9 @@ def decryptFile(file_path):
   # Kiểm tra và tạo thư mục nếu không tồn tại
   os.makedirs(output_directory, exist_ok=True)
 
-  with open(f'{output_directory}{base_name}_decrypted{ext}', 'wb') as file:
+  # with open(f'{output_directory}{base_name}_decrypted{ext}', 'wb') as file:
+  #   file.write(binary_data)
+  with open(file_path, 'wb') as file:
     file.write(binary_data)
 
 # file_path = "VOCABS.docx"

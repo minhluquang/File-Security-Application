@@ -1,87 +1,96 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #343a40; /* Màu nền mới */
-    color: white;
-    height: 100vh;
-    margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #343a40; /* Màu nền mới */
+  color: white;
+  height: 100vh;
+  margin: 0;
 }
 
 .container {
-    background-color: #495057; /* Màu nền của container */
-    padding: 20px;
-    border-radius: 10px;
+  background-color: #495057; /* Màu nền của container */
+  padding: 20px;
+  border-radius: 10px;
 }
 
 h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .upload-area {
-    border: 2px dashed #ccc;
-    border-radius: 10px;
-    padding: 20px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s;
 }
 
 .upload-area.dragging {
-    background-color: #6c757d;
+  background-color: #6c757d;
 }
 
 .upload-icon {
-    width: 100px; /* Kích thước của hình ảnh */
-    height: 100px;
-    margin-bottom: 10px;
+  width: 100px; /* Kích thước của hình ảnh */
+  height: 100px;
+  margin-bottom: 10px;
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.file-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+.file-item-encode,
+.file-item-decode {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .file-icon {
-    max-width: 50px;
-    margin-right: 10px;
+  max-width: 50px;
+  margin-right: 10px;
 }
 
 .file-name {
-    color: #fff;
-    flex-grow: 1;
+  color: #fff;
+  flex-grow: 1;
 }
 
 .remove-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .alert {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
 }
 
-#fileDisplay {
-    max-height: 200px; /* Chiều cao cố định */
-    overflow-y: auto; /* Thêm cuộn dọc */
+#fileDisplayEncode,
+#fileDisplayDecode {
+  max-height: 200px; /* Chiều cao cố định */
+  overflow-y: auto; /* Thêm cuộn dọc */
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
 }
