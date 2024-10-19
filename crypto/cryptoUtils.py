@@ -81,7 +81,7 @@ def encryptFile(file_path):
   encrypted_binary = states_to_binary(encrypted_states)
 
   # Đường dẫn lưu file mã hoá
-  output_directory = "GUI/files_encoded/"
+  output_directory = "storage/files_encoded/"
 
   # Ghi dữ liệu nhị phân vào file
   # with open(output_directory + file_path + '.enc', 'wb') as file:
@@ -100,7 +100,7 @@ def decryptFile(file_path):
   encrypted_states = binary_to_states(encrypted_binary)
 
   # Đường dẫn lưu file sau khi mã hoá
-  output_directory = "GUI/files_decoded/"
+  output_directory = "storage/files_decoded/"
 
   #Kiểm tra và tạo thư mục nếu không tồn tại
   os.makedirs(output_directory, exist_ok=True)
@@ -120,7 +120,7 @@ def decryptFile(file_path):
   # base_name = base_name.replace("GUI/files_encoded/", "")
   
   # Đường dẫn lưu file
-  output_directory = 'GUI/files_decoded/'
+  output_directory = 'storage/files_decoded/'
   
   # Kiểm tra và tạo thư mục nếu không tồn tại
   os.makedirs(output_directory, exist_ok=True)

@@ -7,8 +7,8 @@ from crypto.cryptoUtils import *
 
 app = Flask(__name__)
 base_dir = os.path.dirname(os.path.abspath(__file__))
-app.config['ENCODE_FOLDER'] = os.path.join(base_dir, 'files_encoded') # Thư mục chứa file đã mã hóa là 'files_encoded'
-app.config['DECODE_FOLDER'] = os.path.join(base_dir, 'files_decoded') # Thư mục chứa file đã giải mã là 'files_decoded'
+app.config['ENCODE_FOLDER'] = os.path.join(base_dir, '../storage/files_encoded') # Thư mục chứa file đã mã hóa là 'files_encoded'
+app.config['DECODE_FOLDER'] = os.path.join(base_dir, '../storage/files_decoded') # Thư mục chứa file đã giải mã là 'files_decoded'
 if not os.path.exists(app.config['ENCODE_FOLDER']):
     os.makedirs(app.config['ENCODE_FOLDER'])
 if not os.path.exists(app.config['DECODE_FOLDER']):
