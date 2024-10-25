@@ -4,7 +4,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from crypto.cryptoUtils import *
-
+from crypto.cryptoRSA import *
 app = Flask(__name__)
 base_dir = os.path.dirname(os.path.abspath(__file__))
 app.config['ENCODE_FOLDER'] = os.path.join(base_dir, '../storage/files_encoded') # Thư mục chứa file đã mã hóa là 'files_encoded'
