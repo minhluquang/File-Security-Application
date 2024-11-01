@@ -15,8 +15,17 @@ if not os.path.exists(app.config['DECODE_FOLDER']):
     os.makedirs(app.config['DECODE_FOLDER'])
 @app.route('/')
 def index():
-    return render_template('mainGUI.html')
+    return render_template('index.html')
 
+@app.route('/mainPage')
+def mainPage():
+    return render_template('mainPage.html')
+@app.route('/register')
+def register():
+    return render_template('register.html')
+@app.route('/login')
+def login():
+    return render_template('login.html')
 @app.route('/encode', methods=['POST'])
 def encode_file():
     if 'files' not in request.files:

@@ -40,7 +40,7 @@ def invSubWord(w):
 def invSubBytes(state):
   kq = [0] * 4
   for i in range(0, 4):
-    kq[i] = invSubWord(state[i])
+    kq[i] = invSubWord(state[i])  
   
   return kq
 
