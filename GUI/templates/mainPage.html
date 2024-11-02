@@ -1,241 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ứng dụng mã hóa file</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='mainGUI.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
+    <style>
+      .dropdown-menu {
+        user-select: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ứng dụng mã hóa file</title>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='mainGUI.css') }}" />
-</head>
-
-<body>
-  <div class="container mt-5">
-    <div class="fullscreen-overlay d-none">
-      <div class="spinner-border text-light" role="status">
-        <span class="sr-only">Loading...</span>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+      <div class="container-fluid">
+        <ul class="navbar-nav d-flex flex-row">
+          <li class="nav-item me-3 me-lg-0 dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fas fa-user"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/changePassword">Đổi mật khẩu</a></li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li><a class="dropdown-item" id="logout">Đăng xuất</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container mt-5">
+      <div class="fullscreen-overlay d-none">
+        <div class="spinner-border text-light" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <h1 class="text-center">Ứng dụng mã hóa file</h1>
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item no-select">
+          <a
+            class="nav-link active"
+            id="encode-tab"
+            data-toggle="tab"
+            href="#encode"
+            role="tab"
+            aria-controls="encode"
+            aria-selected="true"
+            >Mã hóa</a
+          >
+        </li>
+        <li class="nav-item no-select">
+          <a
+            class="nav-link"
+            id="decode-tab"
+            data-toggle="tab"
+            href="#decode"
+            role="tab"
+            aria-controls="decode"
+            aria-selected="false"
+            >Giải mã</a
+          >
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div
+          class="tab-pane fade show active"
+          id="encode"
+          role="tabpanel"
+          aria-labelledby="encode-tab"
+        >
+          <form
+            action="/encode"
+            method="post"
+            enctype="multipart/form-data"
+            class="mt-4 text-center"
+            id="uploadFormEncode"
+          >
+            <div class="form-group">
+              <input
+                type="file"
+                name="files"
+                class="form-control-file d-none"
+                id="fileInputEncode"
+                multiple
+              />
+              <div
+                class="upload-area"
+                id="uploadAreaEncode"
+                onclick="document.getElementById('fileInputEncode').click();"
+              >
+                <img
+                  src="{{ url_for('static', filename='upload-file.png') }}"
+                  alt="Upload Icon"
+                  class="upload-icon"
+                />
+                <p>Kéo & Thả các file của bạn vào đây hoặc ấn để tải lên</p>
+              </div>
+              <div id="fileDisplayEncode" class="mt-3"></div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-success btn-block mt-3"
+              onclick="uploadFiles('/encode',arrFiles_encode)"
+            >
+              Mã hóa
+            </button>
+          </form>
+          <div id="message_encode" class="mt-3"></div>
+        </div>
+        <div
+          class="tab-pane fade"
+          id="decode"
+          role="tabpanel"
+          aria-labelledby="decode-tab"
+        >
+          <form
+            action="/decode"
+            method="post"
+            enctype="multipart/form-data"
+            class="mt-4 text-center"
+            id="uploadFormDecode"
+          >
+            <div class="form-group">
+              <input
+                type="file"
+                name="files"
+                class="form-control-file d-none"
+                id="fileInputDecode"
+                multiple
+              />
+              <div
+                class="upload-area"
+                id="uploadAreaDecode"
+                onclick="document.getElementById('fileInputDecode').click();"
+              >
+                <img
+                  src="{{ url_for('static', filename='upload-file.png') }}"
+                  alt="Upload Icon"
+                  class="upload-icon"
+                />
+                <p>Kéo & Thả các file của bạn vào đây hoặc ấn để tải lên</p>
+              </div>
+              <div id="fileDisplayDecode" class="mt-3"></div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary btn-block mt-3"
+              onclick="uploadFiles('/decode',arrFiles_decode)"
+            >
+              Giải mã
+            </button>
+          </form>
+          <div id="message_decode" class="mt-3"></div>
+        </div>
       </div>
     </div>
-    <h1 class="text-center">Ứng dụng mã hóa file</h1>
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item no-select">
-        <a class="nav-link active" id="encode-tab" data-toggle="tab" href="#encode" role="tab" aria-controls="encode"
-          aria-selected="true">Mã hóa</a>
-      </li>
-      <li class="nav-item no-select">
-        <a class="nav-link" id="decode-tab" data-toggle="tab" href="#decode" role="tab" aria-controls="decode"
-          aria-selected="false">Giải mã</a>
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="encode" role="tabpanel" aria-labelledby="encode-tab">
-        <form action="/encode" method="post" enctype="multipart/form-data" class="mt-4 text-center"
-          id="uploadFormEncode">
-          <div class="form-group">
-            <input type="file" name="files" class="form-control-file d-none" id="fileInputEncode" multiple />
-            <div class="upload-area" id="uploadAreaEncode"
-              onclick="document.getElementById('fileInputEncode').click();">
-              <img src="{{ url_for('static', filename='upload-file.png') }}" alt="Upload Icon" class="upload-icon" />
-              <p>Kéo & Thả các file của bạn vào đây hoặc ấn để tải lên</p>
-            </div>
-            <div id="fileDisplayEncode" class="mt-3"></div>
-          </div>
-          <button type="button" class="btn btn-success btn-block mt-3" onclick="uploadFiles('/encode',arrFiles_encode)">
-            Mã hóa
-          </button>
-        </form>
-        <div id="message_encode" class="mt-3"></div>
-      </div>
-      <div class="tab-pane fade" id="decode" role="tabpanel" aria-labelledby="decode-tab">
-        <form action="/decode" method="post" enctype="multipart/form-data" class="mt-4 text-center"
-          id="uploadFormDecode">
-          <div class="form-group">
-            <input type="file" name="files" class="form-control-file d-none" id="fileInputDecode" multiple />
-            <div class="upload-area" id="uploadAreaDecode"
-              onclick="document.getElementById('fileInputDecode').click();">
-              <img src="{{ url_for('static', filename='upload-file.png') }}" alt="Upload Icon" class="upload-icon" />
-              <p>Kéo & Thả các file của bạn vào đây hoặc ấn để tải lên</p>
-            </div>
-            <div id="fileDisplayDecode" class="mt-3"></div>
-          </div>
-          <button type="button" class="btn btn-primary btn-block mt-3" onclick="uploadFiles('/decode',arrFiles_decode)">
-            Giải mã
-          </button>
-        </form>
-        <div id="message_decode" class="mt-3"></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Bootstrap JS and dependencies -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script type="module" src="{{ url_for('static', filename='mainGUI.js') }}"></script>
-  <script>
-    const uploadAreaEncode = document.getElementById('uploadAreaEncode');
-    const fileInputEncode = document.getElementById('fileInputEncode');
-    const fileDisplayEncode = document.getElementById('fileDisplayEncode');
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='mainGUI.js') }}"
+    ></script>
+    <script>
+      const uploadAreaEncode = document.getElementById("uploadAreaEncode");
+      const fileInputEncode = document.getElementById("fileInputEncode");
+      const fileDisplayEncode = document.getElementById("fileDisplayEncode");
 
-    const uploadAreaDecode = document.getElementById('uploadAreaDecode');
-    const fileInputDecode = document.getElementById('fileInputDecode');
-    const fileDisplayDecode = document.getElementById('fileDisplayDecode');
+      const uploadAreaDecode = document.getElementById("uploadAreaDecode");
+      const fileInputDecode = document.getElementById("fileInputDecode");
+      const fileDisplayDecode = document.getElementById("fileDisplayDecode");
 
-    const message_encode = document.getElementById('message_encode');
-    const message_decode = document.getElementById('message_decode');
-    let arrFiles_encode = [];
-    let arrFiles_decode = [];
+      const message_encode = document.getElementById("message_encode");
+      const message_decode = document.getElementById("message_decode");
+      let arrFiles_encode = [];
+      let arrFiles_decode = [];
 
-    uploadAreaEncode.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      uploadAreaEncode.classList.add('dragging');
-    });
+      uploadAreaEncode.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        uploadAreaEncode.classList.add("dragging");
+      });
 
-    uploadAreaEncode.addEventListener('dragleave', () => {
-      uploadAreaEncode.classList.remove('dragging');
-    });
+      uploadAreaEncode.addEventListener("dragleave", () => {
+        uploadAreaEncode.classList.remove("dragging");
+      });
 
-    uploadAreaEncode.addEventListener('drop', (event) => {
-      event.preventDefault();
-      uploadAreaEncode.classList.remove('dragging');
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        arrFiles_encode.push(...files);
-        displayFiles(arrFiles_encode, fileDisplayEncode, 'encode');
-      }
-    });
-
-    uploadAreaDecode.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      uploadAreaDecode.classList.add('dragging');
-    });
-
-    uploadAreaDecode.addEventListener('dragleave', () => {
-      uploadAreaDecode.classList.remove('dragging');
-    });
-
-    uploadAreaDecode.addEventListener('drop', (event) => {
-      event.preventDefault();
-      uploadAreaDecode.classList.remove('dragging');
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        arrFiles_decode.push(...files);
-        displayFiles(arrFiles_decode, fileDisplayDecode, 'decode');
-      }
-    });
-
-    fileInputEncode.addEventListener('change', () => {
-      if (fileInputEncode.files.length > 0) {
-        arrFiles_encode.push(...fileInputEncode.files);
-        displayFiles(arrFiles_encode, fileDisplayEncode, 'encode');
-      }
-    });
-
-    fileInputDecode.addEventListener('change', () => {
-      if (fileInputDecode.files.length > 0) {
-        arrFiles_decode.push(...fileInputDecode.files);
-        displayFiles(arrFiles_decode, fileDisplayDecode, 'decode');
-      }
-    });
-
-    function addFilesToFileInput(files, fileInput, arrfiles) {
-      const dataTransfer = new DataTransfer();
-      for (const file of fileInput.files) {
-        dataTransfer.items.add(file);
-      }
-      for (const file of files) {
-        dataTransfer.items.add(file);
-      }
-      fileInput.files = dataTransfer.files;
-      arrFiles = Array.from(fileInput.files);
-    }
-
-    function displayFiles(files, fileDisplay, type) {
-      fileDisplay.innerHTML = '';
-      for (const file of files) {
-        const fileElement = document.createElement('div');
-        fileElement.classList.add('file-item-' + type);
-        const fileIcon = document.createElement('img');
-        fileIcon.src = "{{ url_for('static', filename='file.png') }}";
-        fileIcon.classList.add('file-icon');
-        const fileName = document.createElement('p');
-        fileName.textContent = file.name;
-        fileName.classList.add('file-name');
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.classList.add('remove-button');
-        removeButton.addEventListener('click', () => {
-          fileElement.remove();
-          updateFileInput(fileDisplay, files, type);
-        });
-        fileElement.appendChild(fileIcon);
-        fileElement.appendChild(fileName);
-        fileElement.appendChild(removeButton);
-        fileDisplay.appendChild(fileElement);
-      }
-    }
-
-    function updateFileInput(fileDisplay, arrFiles, type) {
-      const dataTransfer = new DataTransfer();
-      const fileItems = document.querySelectorAll('.file-item-' + type);
-      fileItems.forEach(item => {
-        const fileName = item.querySelector('.file-name').textContent;
-        const file = arrFiles.find(f => f.name === fileName);
-        if (file) {
-          dataTransfer.items.add(file);
+      uploadAreaEncode.addEventListener("drop", (event) => {
+        event.preventDefault();
+        uploadAreaEncode.classList.remove("dragging");
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+          arrFiles_encode.push(...files);
+          displayFiles(arrFiles_encode, fileDisplayEncode, "encode");
         }
       });
-      if (type === 'encode') {
-        arrFiles_encode = Array.from(dataTransfer.files);
-      } else {
-        arrFiles_decode = Array.from(dataTransfer.files);
-      }
-    }
 
-    function uploadFiles(url, arrFiles) {
-      document.querySelector('.fullscreen-overlay').classList.remove('d-none');
-      const formData = new FormData();
-      for (const file of arrFiles) {
-        formData.append('files', file);
+      uploadAreaDecode.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        uploadAreaDecode.classList.add("dragging");
+      });
+
+      uploadAreaDecode.addEventListener("dragleave", () => {
+        uploadAreaDecode.classList.remove("dragging");
+      });
+
+      uploadAreaDecode.addEventListener("drop", (event) => {
+        event.preventDefault();
+        uploadAreaDecode.classList.remove("dragging");
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+          arrFiles_decode.push(...files);
+          displayFiles(arrFiles_decode, fileDisplayDecode, "decode");
+        }
+      });
+
+      fileInputEncode.addEventListener("change", () => {
+        if (fileInputEncode.files.length > 0) {
+          arrFiles_encode.push(...fileInputEncode.files);
+          displayFiles(arrFiles_encode, fileDisplayEncode, "encode");
+        }
+      });
+
+      fileInputDecode.addEventListener("change", () => {
+        if (fileInputDecode.files.length > 0) {
+          arrFiles_decode.push(...fileInputDecode.files);
+          displayFiles(arrFiles_decode, fileDisplayDecode, "decode");
+        }
+      });
+
+      function addFilesToFileInput(files, fileInput, arrfiles) {
+        const dataTransfer = new DataTransfer();
+        for (const file of fileInput.files) {
+          dataTransfer.items.add(file);
+        }
+        for (const file of files) {
+          dataTransfer.items.add(file);
+        }
+        fileInput.files = dataTransfer.files;
+        arrFiles = Array.from(fileInput.files);
       }
 
-      fetch(url, {
-        method: 'POST',
-        body: formData
-      })
-        .then(response => response.json())
-        .then(data => {
-          document.querySelector('.fullscreen-overlay').classList.add('d-none');
-          if (url === '/encode') {
-            message_encode.textContent = data.message;
-            message_encode.classList.add('alert', 'alert-success');
-          } else {
-            message_decode.textContent = data.message;
-            message_decode.classList.add('alert', 'alert-success');
-          }
-        })
-        .catch(error => {
-          if (url === '/encode') {
-            message_encode.textContent = 'Có lỗi xảy ra khi mã hóa file';
-            message_encode.classList.add('alert', 'alert-danger');
-          } else {
-            message_decode.textContent = 'Có lỗi xảy ra khi giải mã file';
-            message_decode.classList.add('alert', 'alert-danger');
+      function displayFiles(files, fileDisplay, type) {
+        fileDisplay.innerHTML = "";
+        for (const file of files) {
+          const fileElement = document.createElement("div");
+          fileElement.classList.add("file-item-" + type);
+          const fileIcon = document.createElement("img");
+          fileIcon.src = "{{ url_for('static', filename='file.png') }}";
+          fileIcon.classList.add("file-icon");
+          const fileName = document.createElement("p");
+          fileName.textContent = file.name;
+          fileName.classList.add("file-name");
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "Remove";
+          removeButton.classList.add("remove-button");
+          removeButton.addEventListener("click", () => {
+            fileElement.remove();
+            updateFileInput(fileDisplay, files, type);
+          });
+          fileElement.appendChild(fileIcon);
+          fileElement.appendChild(fileName);
+          fileElement.appendChild(removeButton);
+          fileDisplay.appendChild(fileElement);
+        }
+      }
+
+      function updateFileInput(fileDisplay, arrFiles, type) {
+        const dataTransfer = new DataTransfer();
+        const fileItems = document.querySelectorAll(".file-item-" + type);
+        fileItems.forEach((item) => {
+          const fileName = item.querySelector(".file-name").textContent;
+          const file = arrFiles.find((f) => f.name === fileName);
+          if (file) {
+            dataTransfer.items.add(file);
           }
         });
-    }
+        if (type === "encode") {
+          arrFiles_encode = Array.from(dataTransfer.files);
+        } else {
+          arrFiles_decode = Array.from(dataTransfer.files);
+        }
+      }
 
-    // Prevent default behavior for drag and drop
-    document.addEventListener('dragover', (event) => {
-      event.preventDefault();
-    });
+      function uploadFiles(url, arrFiles) {
+        document
+          .querySelector(".fullscreen-overlay")
+          .classList.remove("d-none");
+        const formData = new FormData();
+        for (const file of arrFiles) {
+          formData.append("files", file);
+        }
 
-    document.addEventListener('drop', (event) => {
-      event.preventDefault();
-    });
-  </script>
-  
-</body>
+        fetch(url, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document
+              .querySelector(".fullscreen-overlay")
+              .classList.add("d-none");
+            if (url === "/encode") {
+              message_encode.textContent = data.message;
+              message_encode.classList.add("alert", "alert-success");
+            } else {
+              message_decode.textContent = data.message;
+              message_decode.classList.add("alert", "alert-success");
+            }
+          })
+          .catch((error) => {
+            if (url === "/encode") {
+              message_encode.textContent = "Có lỗi xảy ra khi mã hóa file";
+              message_encode.classList.add("alert", "alert-danger");
+            } else {
+              message_decode.textContent = "Có lỗi xảy ra khi giải mã file";
+              message_decode.classList.add("alert", "alert-danger");
+            }
+          });
+      }
 
+      // Prevent default behavior for drag and drop
+      document.addEventListener("dragover", (event) => {
+        event.preventDefault();
+      });
+
+      document.addEventListener("drop", (event) => {
+        event.preventDefault();
+      });
+    </script>
+  </body>
 </html>

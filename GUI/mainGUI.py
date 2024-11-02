@@ -5,6 +5,7 @@ from PyQt5.QtCore import QUrl
 from threading import Thread
 from app import app
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -13,10 +14,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.browser)
         self.showMaximized()
 
+
 def run_flask():
     app.run()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     flask_thread = Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()

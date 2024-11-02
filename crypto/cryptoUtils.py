@@ -100,18 +100,18 @@ def states_to_binary(states):
 #   with open(file_path, 'wb') as file:
 #     file.write(encrypted_binary)
 
-def encryptFile(file_path):
+def encryptFile(file_path, encrypted_key, private_key):
     # Gọi kiểm tra khóa trước khi mã hóa (chỉ khi mã hóa cần tạo khóa)
-    check_and_generate_key_if_empty()
+    # check_and_generate_key_if_empty()
 
     
     contentFile = read_text_file(file_path)
-    print("contentFile ", contentFile)
+    # print("contentFile ", contentFile)
     states = binary_to_states(contentFile)
 
     # Load khóa AES từ file (đã mã hóa bằng RSA) và giải mã
-    encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
-    private_key = load_private_key_from_file()   # Load khóa riêng RSA
+    # encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
+    # private_key = load_private_key_from_file()   # Load khóa riêng RSA
     key_hex = decryptRSA(encrypted_key, private_key)  # Giải mã khóa AES bằng RSA
 
     # Chuyển key_hex thành mảng w
@@ -174,15 +174,15 @@ def encryptFile(file_path):
 
 
 # Hàm giải mã file
-def decryptFile(file_path):
+def decryptFile(file_path, encrypted_key, private_key):
     with open(file_path, 'rb') as file:
         encrypted_binary = file.read()
 
     encrypted_states = binary_to_states(encrypted_binary)
 
     # Load khóa AES từ file (đã mã hóa bằng RSA) và giải mã
-    encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
-    private_key = load_private_key_from_file()   # Load khóa riêng RSA
+    # encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
+    # private_key = load_private_key_from_file()   # Load khóa riêng RSA
     key_hex = decryptRSA(encrypted_key, private_key)  # Giải mã khóa AES bằng RSA
 
     # Chuyển key_hex thành mảng w

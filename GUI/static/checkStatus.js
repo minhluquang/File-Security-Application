@@ -56,3 +56,17 @@ export const checkLoginStatusRegister = async () => {
     }
     document.querySelector(".fullscreen-overlay").classList.add("d-none");
 }
+export const checkLoginStatusChangePassword = async () => {
+    document.querySelector(".fullscreen-overlay").classList.remove("d-none");
+    try {
+        const response = await axios.get('http://localhost:8080/api/auth/checkStatus');
+       
+        if (response.data.error !== 0) {
+            window.location.href = '/login';
+            return;
+        }
+    } catch (error) {
+        console.error('Error checking login status:', error);
+    }
+    document.querySelector(".fullscreen-overlay").classList.add("d-none");
+}
