@@ -4,7 +4,7 @@ import { rgPw } from "./regex.js";
 checkLoginStatusChangePassword();
 document
   .getElementById("changePasswordForm")
-  .addEventListener("submit", async (event) => {
+  .addEventListener("submit", async event => {
     event.preventDefault();
     await changePassword();
   });
@@ -30,7 +30,7 @@ const changePassword = async () => {
   document.querySelector(".fullscreen-overlay").classList.remove("d-none");
   try {
     const response = await axios.put(
-      "http://localhost:8080/api/user/change-password",
+      "http://localhost:3006/api/user/change-password",
       {
         password,
         newPassword,

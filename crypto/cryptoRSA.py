@@ -106,7 +106,8 @@ def generate_and_encrypt_key():
     # save_private_key_to_file(private_key)
 
     # Key to be encrypted
-    key_hex = "32df43dc72149ac2e06bacdee6264b9f"
+    key = os.urandom(16)
+    key_hex = key.hex() #chuyển sang hex
     # print(f"Key Hex before encryption: {key_hex}")
 
     # Encrypt the key_hex

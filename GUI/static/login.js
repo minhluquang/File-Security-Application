@@ -2,12 +2,10 @@ import { checkLoginStatusLogin } from "./checkStatus.js";
 import * as utils from "./utils.js";
 checkLoginStatusLogin();
 
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
-    await login();
-  });
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  await login();
+});
 
 const login = async () => {
   const email = document.getElementById("form2Example1").value;
@@ -19,7 +17,7 @@ const login = async () => {
   document.querySelector(".fullscreen-overlay").classList.remove("d-none");
 
   try {
-    const response = await axios.post("http://localhost:8080/api/auth/login", {
+    const response = await axios.post("http://localhost:3006/api/auth/login", {
       email,
       password,
     });
