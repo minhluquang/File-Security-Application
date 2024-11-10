@@ -2,7 +2,7 @@ import os
 import sys
 import struct
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
+max_workers=os.cpu_count()
 from encryptAES import encrypt as aes_encrypt
 from decryptAES import decrypt as aes_decrypt
 from encryptAES import * 
@@ -62,21 +62,31 @@ def binary_to_states(byte_data):
     return states
 
 
-def states_to_binary(states):
-    # Bước 1: Khởi tạo chuỗi byte rỗng
+def states_to_binary(state):
+     # Bước 1: Khởi tạo chuỗi byte rỗng
     byte_data = b''
+    # Bước 2: Chuyển đổi từng state thành chuỗi byte và ghép lại
+    for num in state:
+        # Chuyển từng số nguyên 32-bit trong state thành 4 bytes
+        byte_data += num.to_bytes(4, byteorder='big')
 
+    # Bước 3: Loại bỏ các byte đệm nếu có (ví dụ: 0x00 ở cuối)
+    # byte_data = byte_data.rstrip(b'\x00')
+
+    return byte_data
+def states_to_binary1(states):
+     # Bước 1: Khởi tạo chuỗi byte rỗng
+    byte_data = b''
     # Bước 2: Chuyển đổi từng state thành chuỗi byte và ghép lại
     for state in states:
         for num in state:
-            # Chuyển từng số nguyên 32-bit trong state thành 4 bytes
+        # Chuyển từng số nguyên 32-bit trong state thành 4 bytes
             byte_data += num.to_bytes(4, byteorder='big')
 
     # Bước 3: Loại bỏ các byte đệm nếu có (ví dụ: 0x00 ở cuối)
     byte_data = byte_data.rstrip(b'\x00')
 
     return byte_data
-
 
 # def encryptFile(file_path):
 #   contentFile = read_text_file(file_path)
@@ -99,7 +109,7 @@ def states_to_binary(states):
 #   #   file.write(encrypted_binary)
 #   with open(file_path, 'wb') as file:
 #     file.write(encrypted_binary)
-
+import concurrent.futures
 def encryptFile(file_path, encrypted_key, private_key):
     # Gọi kiểm tra khóa trước khi mã hóa (chỉ khi mã hóa cần tạo khóa)
     # check_and_generate_key_if_empty()
@@ -113,25 +123,67 @@ def encryptFile(file_path, encrypted_key, private_key):
     # encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
     # private_key = load_private_key_from_file()   # Load khóa riêng RSA
     key_hex = decryptRSA(encrypted_key, private_key)  # Giải mã khóa AES bằng RSA
-
     # Chuyển key_hex thành mảng w
     w = []
     for i in range(0, len(key_hex), 8):
         wi = int("0x" + key_hex[i:i+8], 16)
         w.append(wi)
-
-    # Mã hóa AES từng block
+    
+        # Mã hóa AES từng block
     encrypted_states = []
-    for state in states:
-        encrypted_content = aes_encrypt(state, w)
-        encrypted_states.append(encrypted_content)
-
+    print(max_workers)
+    with concurrent.futures.ThreadPoolExecutor(max_workers= max_workers) as executor:
+        futures = [executor.submit(generateStates,state,w) for state in states]
+        encrypted_states = [future.result() for future in futures]
     # Chuyển đổi các encrypted_states thành dữ liệu nhị phân
-    encrypted_binary = states_to_binary(encrypted_states)
+    with concurrent.futures.ThreadPoolExecutor(max_workers= max_workers) as executor:
+        futures = [executor.submit(states_to_binary,state) for state in encrypted_states]
+        encrypted_binary = b''.join([future.result() for future in futures])
+    # encrypted_binary = states_to_binary1(encrypted_states)
+    # print(f"encrypted_binary: {encrypted_binary}")
 
     # Ghi dữ liệu nhị phân đã mã hóa vào file
     with open(file_path, 'wb') as file:
         file.write(encrypted_binary)
+    print("END")
+
+def generateStates(state,w):
+    return aes_encrypt(state,w)
+   
+# def encryptFile(file_path, encrypted_key, private_key):
+#     # Gọi kiểm tra khóa trước khi mã hóa (chỉ khi mã hóa cần tạo khóa)
+#     # check_and_generate_key_if_empty()
+
+    
+#     contentFile = read_text_file(file_path)
+#     # print("contentFile ", contentFile)
+#     states = binary_to_states(contentFile)
+
+#     # Load khóa AES từ file (đã mã hóa bằng RSA) và giải mã
+#     # encrypted_key = load_ciphertext_from_file()  # Load khóa AES mã hóa
+#     # private_key = load_private_key_from_file()   # Load khóa riêng RSA
+#     key_hex = decryptRSA(encrypted_key, private_key)  # Giải mã khóa AES bằng RSA
+
+#     # Chuyển key_hex thành mảng w
+#     w = []
+#     for i in range(0, len(key_hex), 8):
+#         wi = int("0x" + key_hex[i:i+8], 16)
+#         w.append(wi)
+#     print(f"w : {w}")
+#     print(states)
+#     # Mã hóa AES từng block
+#     encrypted_states = []
+#     for state in states:
+#         encrypted_content = aes_encrypt(state, w)
+#         encrypted_states.append(encrypted_content)
+
+#     print(f"encrypted_states : {encrypted_states}")
+#     # Chuyển đổi các encrypted_states thành dữ liệu nhị phân
+#     encrypted_binary = states_to_binary(encrypted_states)
+
+#     # Ghi dữ liệu nhị phân đã mã hóa vào file
+#     with open(file_path, 'wb') as file:
+#         file.write(encrypted_binary)
 
 # def decryptFile(file_path):
 #   # Đọc dữ liệu nhị phân từ file
@@ -171,7 +223,8 @@ def encryptFile(file_path, encrypted_key, private_key):
 #   #   file.write(binary_data)
 #   with open(file_path, 'wb') as file:
 #     file.write(binary_data)
-
+def Generate_AES_DECRYPTSTATES(encryptState, w):
+    return aes_decrypt(encryptState, w)
 
 # Hàm giải mã file
 def decryptFile(file_path, encrypted_key, private_key):
@@ -193,13 +246,18 @@ def decryptFile(file_path, encrypted_key, private_key):
 
     # Giải mã AES từng block
     decrypted_states = []
-    for encryptState in encrypted_states:
-        decrypted_content = aes_decrypt(encryptState, w)
-        decrypted_states.append(decrypted_content)
+    with concurrent.futures.ThreadPoolExecutor(max_workers= max_workers) as executor:
+        futures = [executor.submit(Generate_AES_DECRYPTSTATES,encryptState,w) for encryptState in encrypted_states]
+        decrypted_states = [future.result() for future in futures]
+    # for encryptState in encrypted_states:
+    #     decrypted_content = aes_decrypt(encryptState, w)
+    #     decrypted_states.append(decrypted_content)
 
     # Chuyển state đã giải mã sang binary
-    binary_data = states_to_binary(decrypted_states)
-
+    # binary_data = states_to_binary1(decrypted_states)
+    with concurrent.futures.ThreadPoolExecutor(max_workers= max_workers) as executor:
+        futures = [executor.submit(states_to_binary,state) for state in decrypted_states]
+        binary_data = b''.join([future.result() for future in futures])
     # Ghi bản rõ vào file
     with open(file_path, 'wb') as file:
         file.write(binary_data)

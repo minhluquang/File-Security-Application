@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import os
 import sys
-
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from crypto.cryptoUtils import *
 from crypto.cryptoRSA import *
@@ -73,7 +73,11 @@ def encode_file():
                 print("key", private_key)
                 print("key", key_aes)
                 file.save(file_path)
+                start_time = time.perf_counter()
                 encryptFile(file_path, key_aes, private_key)
+                end_time = time.perf_counter()
+                execution_time = end_time - start_time
+                print(f"Thời gian mã hóa là: {execution_time} giây")
             except Exception as e:
                 return jsonify({"message": f"Lưu file thất bại: {str(e)}"}), 500
     return jsonify({"message": "Files đã được mã hóa"}), 200
@@ -97,7 +101,11 @@ def decode_file():
                 private_key = key["privateKey_rsa"]
                 key_aes = key["key_aes"]
                 file.save(file_path)
+                start_time = time.perf_counter()
                 decryptFile(file_path, key_aes, private_key)
+                end_time = time.perf_counter()
+                execution_time = end_time - start_time
+                print(f"Thời gian giải mã là: {execution_time} giây")
             except Exception as e:
                 return jsonify({"message": f"Lưu file thất bại: {str(e)}"}), 500
     return jsonify({"message": "Files đã được giải mã"}), 200
