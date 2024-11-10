@@ -60,18 +60,18 @@ def encode_file():
                     return jsonify({"message": "Không thể lấy khóa mã hóa"}), 500
                 private_key = key["privateKey_rsa"]
                 key_aes = key["key_aes"]
-                print(private_key)
-                print(key_aes)
+                # print(private_key)
+                # print(key_aes)
                 if private_key is None or key_aes is None:
                     generate_keys = generate_and_encrypt_key()
-                    print("ge", generate_keys)
+                    # print("ge", generate_keys)
                     private_key = generate_keys[0]
                     key_aes = generate_keys[1]
                     save_Key_res = save_Key(generate_keys[0], generate_keys[1])
                     if save_Key_res is None:
                         return jsonify({"message": "Không thể lưu khóa mã hóa"}), 500
-                print("key", private_key)
-                print("key", key_aes)
+                # print("key", private_key)
+                # print("key", key_aes)
                 file.save(file_path)
                 start_time = time.perf_counter()
                 encryptFile(file_path, key_aes, private_key)

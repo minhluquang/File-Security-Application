@@ -131,7 +131,7 @@ def encryptFile(file_path, encrypted_key, private_key):
     
         # Mã hóa AES từng block
     encrypted_states = []
-    print(max_workers)
+    # print(max_workers)
     with concurrent.futures.ThreadPoolExecutor(max_workers= max_workers) as executor:
         futures = [executor.submit(generateStates,state,w) for state in states]
         encrypted_states = [future.result() for future in futures]
@@ -145,7 +145,7 @@ def encryptFile(file_path, encrypted_key, private_key):
     # Ghi dữ liệu nhị phân đã mã hóa vào file
     with open(file_path, 'wb') as file:
         file.write(encrypted_binary)
-    print("END")
+    # print("END")
 
 def generateStates(state,w):
     return aes_encrypt(state,w)
